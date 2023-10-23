@@ -21,4 +21,14 @@ class Task extends Model
     {
         return $this->belongsTo(Board::class);
     }
+
+    public function parent()
+    {
+        return $this->belongsTo(Task::class, "parent_task_id");
+    }
+
+    public function next()
+    {
+        return $this->hasOne(Task::class, "next_task_id");
+    }
 }
