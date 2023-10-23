@@ -22,4 +22,9 @@ class Project extends Model
     {
         return $this->hasMany(Board::class);
     }
+
+    public function project_type()
+    {
+        return $this->belongsTo(ProjectType::class);
+    }
 }
