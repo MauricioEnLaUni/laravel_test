@@ -23,7 +23,26 @@ class ProjectResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\TextInput::make("name")
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\Select::make("user_id")
+                    ->relationship("user", "name")
+                    ->searchable()
+                    ->preload()
+                    ->required(),
+                Forms\Components\DatePicker::make("started_at")
+                    ->maxDate(now())
+                    ->required(),
+                Forms\Components\DatePicker::make("ends")
+                    ->minDate(now())
+                    ->required(),
+                Forms\Components\Checkbox::make("complete"),
+                Forms\Components\Select::make("project_type_id")
+                    ->relationship("project_type", "name")
+                    ->searchable()
+                    ->preload()
+                    ->required(),
             ]);
     }
 
@@ -31,10 +50,20 @@ class ProjectResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make("name")
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make("user.name")
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make("started_at")
+                    ->sortable(),
+                Tables\Columns\TextColumn::make("ends")
+                    ->sortable(),
+                Tables\Columns\TextColumn::make("complete"),
+                Tables\Columns\TextColumn::make("project_type.name")
             ])
             ->filters([
-                //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -45,14 +74,14 @@ class ProjectResource extends Resource
                 ]),
             ]);
     }
-    
+
     public static function getRelations(): array
     {
         return [
             //
         ];
     }
-    
+
     public static function getPages(): array
     {
         return [
@@ -60,5 +89,5 @@ class ProjectResource extends Resource
             'create' => Pages\CreateProject::route('/create'),
             'edit' => Pages\EditProject::route('/{record}/edit'),
         ];
-    }    
+    }
 }

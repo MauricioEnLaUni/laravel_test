@@ -23,7 +23,34 @@ class TaskResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\TextInput::make("name")
+                    ->required(),
+                Forms\Components\TextInput::make("description"),
+                Forms\Components\Select::make("user_id")
+                    ->relationship("user", "name")
+                    ->searchable()
+                    ->preload()
+                    ->required(),
+                Forms\Components\DatePicker::make("starting")
+                    ->maxDate(now())
+                    ->required(),
+                Forms\Components\DatePicker::make("ending")
+                    ->minDate(now())
+                    ->required(),
+                Forms\Components\DatePicker::make("completed_at")
+                    ->minDate(now()),
+                Forms\Components\Checkbox::make("complete"),
+                Forms\Components\Select::make("next_task_id")
+                    ->options(Task::all()->pluck("name", "id"))
+                    ->searchable()
+                    ->preload(),
+                Forms\Components\Select::make("parent_task_id")
+                    ->options(Task::all()->pluck("name", "id"))
+                    ->searchable()
+                    ->preload(),
+                Forms\Components\Select::make("board_id")
+                    ->relationship("board", "name")
+                    ->required(),
             ]);
     }
 
@@ -31,7 +58,22 @@ class TaskResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make("name")
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make("description"),
+                Tables\Columns\TextColumn::make("user.name")
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make("started_at")
+                    ->sortable(),
+                Tables\Columns\TextColumn::make("ending")
+                    ->sortable(),
+                Tables\Columns\TextColumn::make("completed_at")
+                    ->sortable(),
+                Tables\Columns\TextColumn::make("next_task_id"),
+                Tables\Columns\TextColumn::make("parent_task_id"),
+                Tables\Columns\TextColumn::make("board.name")
             ])
             ->filters([
                 //
@@ -45,14 +87,14 @@ class TaskResource extends Resource
                 ]),
             ]);
     }
-    
+
     public static function getRelations(): array
     {
         return [
             //
         ];
     }
-    
+
     public static function getPages(): array
     {
         return [
@@ -60,5 +102,5 @@ class TaskResource extends Resource
             'create' => Pages\CreateTask::route('/create'),
             'edit' => Pages\EditTask::route('/{record}/edit'),
         ];
-    }    
+    }
 }

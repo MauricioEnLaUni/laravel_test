@@ -23,7 +23,43 @@ class BoardResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\TextInput::make("name")
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make("description")
+                    ->maxLength(255),
+                Forms\Components\Select::make("user_id")
+                    ->relationship("user", "name")
+                    ->searchable()
+                    ->preload()
+                    ->required(),
+                Forms\Components\Select::make("project_id")
+                    ->relationship("project", "name")
+                    ->searchable()
+                    ->preload()
+                    ->createOptionForm([
+                        Forms\Components\TextInput::make("name")
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\Select::make("user_id")
+                            ->relationship("user", "name")
+                            ->searchable()
+                            ->preload()
+                            ->required(),
+                        Forms\Components\DatePicker::make("started_at")
+                            ->maxDate(now())
+                            ->required(),
+                        Forms\Components\DatePicker::make("ends")
+                            ->minDate(now())
+                            ->required(),
+                        Forms\Components\Checkbox::make("complete"),
+                        Forms\Components\Select::make("project_type_id")
+                            ->relationship("project_type", "name")
+                            ->searchable()
+                            ->preload()
+                            ->required(),
+                    ])
+                    ->required(),
             ]);
     }
 
@@ -31,7 +67,16 @@ class BoardResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make("name")
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make("description"),
+                Tables\Columns\TextColumn::make("user.name")
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make("project.name")
+                    ->sortable()
+                    ->searchable(),
             ])
             ->filters([
                 //
@@ -45,14 +90,14 @@ class BoardResource extends Resource
                 ]),
             ]);
     }
-    
+
     public static function getRelations(): array
     {
         return [
             //
         ];
     }
-    
+
     public static function getPages(): array
     {
         return [
@@ -60,5 +105,5 @@ class BoardResource extends Resource
             'create' => Pages\CreateBoard::route('/create'),
             'edit' => Pages\EditBoard::route('/{record}/edit'),
         ];
-    }    
+    }
 }
